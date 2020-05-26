@@ -1,1 +1,165 @@
+<!DOCTYPE html>
+<html>
 
+<head>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+  <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet"
+    type="text/css">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+  <style>
+    .v-toolbar__content {
+      padding-left: 0;
+    }
+	.flex-wrapper {
+  display: flex;
+  flex-flow: row nowrap;
+}
+
+.single-chart {
+  width: 33%;
+  justify-content: space-around ;
+}
+
+.circular-chart {
+  display: block;
+  margin: 10px auto;
+  max-width: 80%;
+  max-height: 250px;
+}
+
+.circle-bg {
+  fill: none;
+  stroke: #eee;
+  stroke-width: 3.8;
+}
+
+.circle {
+  fill: none;
+  stroke-width: 2.8;
+  stroke-linecap: round;
+  animation: progress 1s ease-out forwards;
+}
+
+@keyframes progress {
+  0% {
+    stroke-dasharray: 0 100;
+  }
+}
+
+.circular-chart.orange .circle {
+  stroke: #ff9f00;
+  background-color: white;
+}
+
+.circular-chart.green .circle {
+  stroke: #4CC790;
+}
+
+.circular-chart.blue .circle {
+  stroke: #3c9ee5;
+}
+
+.percentage {
+  fill: #666;
+  font-family: sans-serif;
+  font-size: 0.5em;
+  text-anchor: middle;
+}
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <v-app>
+      <v-app-bar app color="blue darken-3" dark>
+        <v-col cols="2">
+          <v-toolbar-title class="ml-0 pl-4">
+            <span class="hidden-sm-and-down">Go Corona</span>
+          </v-toolbar-title>
+        </v-col>
+		<v-col cols="10" color="white">
+		<v-toolbar-title>
+		<span color="white"> I am here to help you through the tough times. Don't panic and get all of your queries resolved here. :)</span>
+		</v-toolbar-title>
+		</v-col>
+      </v-app-bar>
+      <v-content>  
+      <v-col cols="10" color="gray darken-1" >
+          <v-text-field v-model="query" v-on:keyup.enter="submit" flat solo-inverted hide-details
+            prepend-inner-icon="search" label="Please ask me anything" ></v-text-field>
+        </v-col>    
+        
+          <v-col cols="12" md="6" offset-md="1" offset-lg="1" offset-xl="1">
+		  <template v-if="loading=='true'">
+		  <v-card>
+		  <v-card-title> Loading..</v-card-title>
+		  </v-card>
+		  </template>
+            <template v-if="loading=='false'">
+
+				<v-card max-width="700" flat v-for="(item, index) in result" :key="index">
+                <v-card-title>[[ item._source.ques]]</v-card-title>
+                <v-card-text>[[ item._source.ans ]]</v-card-text>
+                <!--
+                <v-card-actions>
+                  <v-chip class="primary">[[ item._score ]]</v-chip>
+                </v-card-actions>
+              -->
+              </v-card>
+                <!--
+                <v-card-actions>
+                  <v-chip class="primary">[[ item._score ]]</v-chip>
+                </v-card-actions>
+              -->
+              </v-card>
+            </template>
+          
+        </v-row>
+      </v-content>
+    </v-app>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script>
+    axios.defaults.xsrfCookieName = 'csrftoken';
+    axios.defaults.xsrfHeaderName = 'X-CSRFToken';
+    const base_url = window.location.href;
+    new Vue({
+      el: '#app',
+      vuetify: new Vuetify(),
+      delimiters: ['[[', ']]'],
+      data: {
+        query: '',
+        result: [],
+		loading: 'false'
+      },
+      created() {
+        
+      },
+      methods: {
+        search() {
+          axios.get(`${base_url}search?q=${this.query}`).then(response => {
+            this.result = response.data;
+			this.loading = 'false';
+          })
+        },
+        submit() {
+          if (this.query == '') {
+            this.result = [];
+            return;
+          }
+		  this.result = [];
+		  this.loading = 'true';
+          this.search();
+        }
+      }
+    })
+  </script>
+</body>
+
+</html>
