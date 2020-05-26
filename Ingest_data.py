@@ -46,11 +46,11 @@ def ingest():
 
 
 #Creating an object with the required fields in order to ingest
-    vector = index(data, data_vectors)
+    vector = index(data, data_vectors, questions,answers)
 
     bulk(es, vector)
 
-def index(data, data_vectors):
+def index(data, data_vectors, questions,answers):
     for i in range(len(data)):
         BASE_VECTORS = data_vectors[i].tolist()
         print("done")
